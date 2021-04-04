@@ -3,13 +3,15 @@ const apiBaseUrl = "/api"
 async function uniFetch(url, options) {
     options = options || {};
     const method = options.method || 'GET';
+    const headers = options.headers || {'Content-Type': 'application/json'};
+    if (options.jwt){
+        headers["Authorization"]=`Bearer ${options.jwt}`;
+    }
     const body = JSON.stringify(options.body) || undefined;
     const response = await fetch(apiBaseUrl + url, {
         method,
         body,
-        headers: {
-            'Content-Type': 'application/json'
-        }
+        headers: headers
     });
     // request completed but response code not 200
     if (!response.ok) {
@@ -30,7 +32,8 @@ async function uniFetch(url, options) {
         }
         if (errMsg) throw errMsg;
     }
-    return await response.json();
+    const {data} = await response.json();
+    return data;
 }
 
 export { apiBaseUrl, uniFetch };

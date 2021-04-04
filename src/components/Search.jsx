@@ -1,6 +1,6 @@
 import "./Search.css"
 import React, { useEffect, useState } from "react";
-import { Input, Button, Form } from "antd";
+import { Input, Button, Form, message } from "antd";
 import { uniFetch } from "../utils/apiUtil";
 import { Card } from "antd";
 import { DisplayPics } from "./Detail";
@@ -13,11 +13,9 @@ function SearchComplex(props) {
 
     const atomList = ['C', 'H', 'O', 'N', 'F', 'Si', 'P', 'S', 'Cl', 'Br', 'I'];
     let [atoms, setAtoms] = useState(atomList.map(ele => props.nmr ? 0 : -1));
-
     let [entries, setEntries] = useState([]);
 
     useEffect(() => {
-        console.log(props)
         if (!props.mass) {
             setminIonPeak(-1);
             setmaxIonPeak(-1);
@@ -37,21 +35,23 @@ function SearchComplex(props) {
         let formula = {};
         for (let i = 0; i < atomList.length; i++)
             formula[atomList[i].toLowerCase()] = atoms[i]
-        console.log(atoms);
         let body = {
             minIonPeak: minIonPeak,
             maxIonPeak: maxIonPeak,
             formula: formula
         };
-        console.log(body);
         let option = {
             method: "POST",
             body: body
         };
         (async () => {
-            let data = await uniFetch("/ans/search", option);
-            console.log(data);
-            setEntries(data);
+            try {
+                let data = await uniFetch("/ans/search", option);
+                setEntries(data);
+            }
+            catch(e){
+                message.error(e.errMsg);
+            }
         })();
     }
     return (
@@ -93,12 +93,12 @@ function SearchComplex(props) {
                     title={<div>
                         {(ele.formula != null) && <b>分子式：</b>}<span>{convert(ele.formula)}&nbsp;</span>
                         {(ele.ionPeak != null) && <b>离子峰：</b>}<span>{ele.ionPeak}</span>
-                        </div>}
+                    </div>}
                     style={{ marginTop: "10px" }}
                     headStyle={{ background: "#fafafa" }}
                     extra={<Link to={`/answer/${ele.id}`} >查看解析</Link>}>
                     <p>{ele.problem}</p>
-                    <DisplayPics pic={ele.problemPics} />
+                    <DisplayPics pic={ele.problemPics} width="40%" />
                 </Card>
             )}
         </div >
@@ -113,8 +113,11 @@ function convert(formula) {
         atomList.forEach(ele => {
             let c = ele.toLowerCase()
             let n = formula[c]
-            if (n > 0) {
+            if (n > 1) {
                 atoms.push(<span>{ele}<sub>{n}</sub></span>)
+            }
+            else if (n > 0) {
+                atoms.push(<span>{ele}</span>)
             }
         });
     }
@@ -125,4 +128,4 @@ function convert(formula) {
     );
 }
 
-export default SearchComplex;
+export { SearchComplex, convert };
