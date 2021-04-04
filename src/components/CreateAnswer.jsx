@@ -55,12 +55,12 @@ function CreateAnswer(props) {
             if (ansPics.length > 0)
                 for (let i = 0; i < ansPics.length; i++) {
                     const file = ansPics[i];
-                    formData.append('ProbFiles', file, file.name);
+                    formData.append('ansPics', file, file.name);
                 }
             if (probPics.length > 0)
                 for (let i = 0; i < probPics.length; i++) {
                     const file = probPics[i];
-                    formData.append('AnsFiles', file, file.name);
+                    formData.append('probPics', file, file.name);
                 }
 
             let option = {
