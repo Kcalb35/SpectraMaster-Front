@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { uniFetch } from "../utils/apiUtil";
 import "antd/dist/antd.css"
 import { Image, Card, Button, Table, Popconfirm, message } from "antd";
-import { convert } from "./Search";
+import { convert } from "./SearchAnswer";
 import './Detail.css'
 
 function Answer() {
@@ -14,12 +14,10 @@ function Answer() {
     let [peak, setPeak] = useState(-1);
     let [prob, setProb] = useState("");
     let [ans, setAns] = useState("");
-    let data = null;
 
     useEffect(() => {
         (async () => {
-            data = await uniFetch(`/ans/${id}`, { method: "GET" });
-            console.log(data);
+            let data = await uniFetch(`/ans/${id}`, { method: "GET" });
             setProb(data.problem);
             setAns(data.answer);
             setProbPics(data.problemPics);

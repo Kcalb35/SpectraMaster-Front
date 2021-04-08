@@ -1,35 +1,33 @@
-import "./Search.css"
-import React, { useEffect, useState } from "react";
+import "./SearchAnswer.css"
+import React, { useState } from "react";
 import { Input, Button, Form, message } from "antd";
 import { uniFetch } from "../utils/apiUtil";
-import { Card } from "antd";
+import { Card ,Checkbox} from "antd";
 import { DisplayPics } from "./Detail";
 import "antd/dist/antd.css"
 import { Link } from "react-router-dom";
 
 function SearchComplex(props) {
-    let [minIonPeak, setminIonPeak] = useState(props.mass ? 0 : -1);
-    let [maxIonPeak, setmaxIonPeak] = useState(props.mass ? 0 : -1);
+    let [minIonPeak, setminIonPeak] = useState( 0 );
+    let [maxIonPeak, setmaxIonPeak] = useState( 0 );
 
     const atomList = ['C', 'H', 'O', 'N', 'F', 'Si', 'P', 'S', 'Cl', 'Br', 'I'];
-    let [atoms, setAtoms] = useState(atomList.map(ele => props.nmr ? 0 : -1));
+    let [atoms, setAtoms] = useState(atomList.map(ele =>0 ));
     let [entries, setEntries] = useState([]);
+    let [nmr,setNmr] = useState(true);
+    let [mass,setMass] = useState(true);
 
-    useEffect(() => {
-        if (!props.mass) {
-            setminIonPeak(-1);
-            setmaxIonPeak(-1);
-        }
-        else {
-            setmaxIonPeak(0);
-            setminIonPeak(0);
-        }
-
-        if (!props.nmr)
-            setAtoms(atomList.map(ele => -1));
-        else setAtoms(atomList.map(ele => 0));
-        setEntries([]);
-    }, [props.mass, props.nmr]);
+    let checkmass=(e)=>{
+        let flag = e.target.checked;
+        setmaxIonPeak(flag?0:-1);
+        setminIonPeak(flag?0:-1);
+        setMass(flag);
+    }
+    let checknmr=(e)=>{
+        let flag = e.target.checked;
+        setAtoms(atomList.map(ele=> flag?0:-1));
+        setNmr(flag);
+    }
 
     let search = () => {
         let formula = {};
@@ -51,14 +49,17 @@ function SearchComplex(props) {
             }
             catch(e){
                 message.error(e.errMsg);
+                setEntries([]);
             }
         })();
     }
     return (
         <div>
+            <Checkbox checked={mass} onChange={checkmass}>查质谱</Checkbox>
+            <Checkbox checked={nmr} onChange={checknmr}>查核磁</Checkbox>
             <Form layout="horizontal">
-                <div hidden={!props.mass}>
-                    <h2>分子离子峰质荷比</h2>
+                <div hidden={!mass}>
+                    <h3>分子离子峰质荷比</h3>
                     <Form.Item label="范围下界"  >
                         <Input
                             placeholder="min Ion Peak"
@@ -75,8 +76,8 @@ function SearchComplex(props) {
                         />
                     </Form.Item>
                 </div>
-                <div hidden={!props.nmr}>
-                    <h2>分子式</h2>
+                <div hidden={!nmr}>
+                    <h3>分子式</h3>
                     <div id="formula-layout">
                         {atomList.map((atom, index) => <Form.Item label={atom} key={atom} >
                             <Input maxLength="5" value={atoms[index]} size="small" onChange={(e) => { setAtoms(atoms.map((item, i) => i === index ? parseInt(e.target.value) : item)) }} style={{ width: 60 }} />

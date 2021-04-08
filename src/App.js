@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import Login from "./components/Login";
 import About from "./components/About";
-import { SearchComplex } from "./components/Search"
+import { SearchComplex } from "./components/SearchAnswer"
 import { Answer, AnswersList } from "./components/Detail";
 import { CreateAnswer } from "./components/CreateAnswer";
 import { Layout, Menu, Result } from "antd";
@@ -33,9 +33,7 @@ function App() {
             <Menu.Item key="1">
               <Link to="/" style={{ fontSize: "16px" }}>首页</Link>
             </Menu.Item>
-            <Menu.Item key="2"><Link to="/mass">质谱题解搜索</Link></Menu.Item>
-            <Menu.Item key="3"><Link to="/nmr">核磁谱题解搜索</Link></Menu.Item>
-            <Menu.Item key="4"><Link to="/complex">综合题解搜索</Link></Menu.Item>
+            <Menu.Item key="4"><Link to="/search">题解搜索</Link></Menu.Item>
             <Menu.Item key="5"><Link to="/about">帮助与关于</Link></Menu.Item>
             <Menu.Item key="6">
               <Link to="/login" style={{ fontSize: "16px" }}>后台登录</Link>
@@ -90,14 +88,8 @@ function App() {
               <Route path="/login">
                 {login?<Redirect to="/backend/answers"/>:<Login loginMethod={()=>{setLogin(true);}}/>}
               </Route>
-              <Route path="/mass">
-                <SearchComplex mass={true} nmr={false}></SearchComplex>
-              </Route>
-              <Route path="/nmr">
-                <SearchComplex mass={false} nmr={true}></SearchComplex>
-              </Route>
-              <Route path="/complex">
-                <SearchComplex mass={true} nmr={true}></SearchComplex>
+              <Route path="/search">
+                <SearchComplex ></SearchComplex>
               </Route>
               <Route path="/answer/:id" children={<Answer />}></Route>
               <Route path="/404">

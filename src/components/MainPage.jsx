@@ -16,7 +16,7 @@ function MainPage(props) {
 
     return (
         <div >
-            <p style={{textAlign:'center',lineHeight:'60vh',fontSize:'1000',fontSize:'80px'}}>共有{num}道题解</p>
+            <p style={{textAlign:'center',lineHeight:'60vh',fontSize:'80px'}}>共有{num}道题解</p>
         </div>
     );
 }
