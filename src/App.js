@@ -6,7 +6,7 @@ import {
   Link,
   Redirect
 } from "react-router-dom";
-import { useEffect,useState } from "react";
+import { useState } from "react";
 import Login from "./components/Login";
 import About from "./components/About";
 import { SearchComplex } from "./components/Search"
@@ -21,14 +21,9 @@ const { Header, Footer, Sider, Content } = Layout
 
 function App() {
 
-
-  let [login,setLogin] = useState(false);
+  let [login,setLogin] = useState(localStorage.getItem('jwt')?true:false);
+  let logout = ()=>{setLogin(false);localStorage.removeItem('jwt');}
  
-  useEffect(()=>{
-    if  (!localStorage.getItem('jwt')) setLogin(false);
-    else setLogin(true);
-  },[]);
-
   return (
     <Router>
       <Layout className="layout" style={{ height: '100%' }}>
@@ -71,16 +66,16 @@ function App() {
                   }}
                 >
                   <Route path="/backend/create">
-                    <CreateAnswer></CreateAnswer> 
+                    {!login?<Redirect to="/login"/>:<CreateAnswer logout={logout}/>}
                   </Route>
                   <Route path="/backend/update/:id">
-                    <UpdateAnswer></UpdateAnswer>
+                    {!login?<Redirect to="/login"/>:<UpdateAnswer logout={logout}/>}
                   </Route>
                   <Route path="/backend/answers">
-                    <AnswersList></AnswersList>
+                    {!login?<Redirect to="/login"/>:<AnswersList logout={logout}/>}
                   </Route>
                   <Route path="/backend/users"><h2>前后端都还没做</h2></Route>
-                  <Route exact path="/backend/">
+                  <Route exact path="/backend">
                     <Redirect to="/backend/answers"></Redirect>
                   </Route>
                 </Content>
@@ -93,7 +88,7 @@ function App() {
                 <About />
               </Route>
               <Route path="/login">
-                {login?<Redirect to="/backend/"/>:<Login loginMethod={()=>{setLogin(true);}}/>}
+                {login?<Redirect to="/backend/answers"/>:<Login loginMethod={()=>{setLogin(true);}}/>}
               </Route>
               <Route path="/mass">
                 <SearchComplex mass={true} nmr={false}></SearchComplex>

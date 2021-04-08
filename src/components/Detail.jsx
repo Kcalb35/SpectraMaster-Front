@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Redirect, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { uniFetch } from "../utils/apiUtil";
 import "antd/dist/antd.css"
 import { Image, Card, Button, Table, Popconfirm, message } from "antd";
@@ -52,15 +52,21 @@ function AnswersList(props) {
 
     let deleteAnswer = (id) => {
         let jwt = localStorage.getItem('jwt');
-        console.log(id);
         if (jwt) {
-            console.log(jwt);
             (async () => {
-                let option = { method: "DELETE", jwt: jwt };
-                let data = await uniFetch(`/ans/${id}`, option);
-                console.log(data);
-                message.success("删除成功");
-                fresh();
+                try {
+                    let option = { method: "DELETE", jwt: jwt };
+                    let data = await uniFetch(`/ans/${id}`, option);
+                    console.log(data);
+                    message.success("删除成功");
+                } catch (err) {
+                    if (err.code === 401) {
+                        console.log(err);
+                        localStorage.removeItem('jwt');
+                        props.logout();
+                        message.error(err.msg);
+                    }
+                }
             })();
         }
     }
@@ -86,7 +92,7 @@ function AnswersList(props) {
             title: '序号',
             dataIndex: 'id',
             key: 'id',
-            render: (text, record) => (<Link to={`/answer/${record.id}`}>{text}</Link>),
+            render: (text, record) => (<Link key={text} to={`/answer/${record.id}`}>{text}</Link>),
             width: '5%'
 
         },
@@ -113,21 +119,22 @@ function AnswersList(props) {
             title: '缩略图',
             dataIndex: 'problemPics',
             key: 'problemPics',
-            render: problemPics => (problemPics && <DisplayPics pic={problemPics} width="45%" />)
+            render: (problemPics, record) => (problemPics && <DisplayPics key={`pics${record.id}`} pic={problemPics} width="45%" />)
         },
         {
             title: '操作',
             key: 'action',
             render: (text, record) => (
                 <div className="btn-edit-box">
-                    <Button size="small" className="btn-edit"><Link to={`/backend/update/${record.id}`}>修改</Link></Button>
+                    <Button key={`detail${record.id}`} size="small" className="btn-edit"><Link to={`/answer/${record.id}`}>查看</Link></Button>
+                    <Button key={`update${record.id}`} size="small" className="btn-edit"><Link to={`/backend/update/${record.id}`}>修改</Link></Button>
                     <Popconfirm
                         title="是否删除题解"
                         onConfirm={() => { deleteAnswer(record.id) }}
                         okText="确认"
                         cancelText="取消"
                     >
-                        <Button danger size="small" className="btn-edit" >删除
+                        <Button key={`delete${record.id}`} danger size="small" className="btn-edit" >删除
                         </Button>
                     </Popconfirm>
 
@@ -138,6 +145,7 @@ function AnswersList(props) {
     return (
         <div>
             <Button type="primary" style={{ margin: '0 0 10px 0' }}><Link to="/backend/create">添加题解</Link></Button>
+            <Button type='primary' style={{ margin: '0 0 10px 10px'}} onClick={props.logout}><Link to="/login">退出登录</Link></Button>
             <Table columns={columns} dataSource={source} key="table"></Table>
         </div>
     );

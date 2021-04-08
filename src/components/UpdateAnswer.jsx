@@ -34,7 +34,6 @@ function UpdateAnswer(props) {
             }
             setProb(data.problem);
             setAns(data.answer);
-
         })();
     }, []);
 
@@ -96,6 +95,7 @@ function UpdateAnswer(props) {
                 if (!response.ok) {
                     if (response.status === 401) {
                         message.error('没有权限或权限过期，请登录');
+                        props.logout();
                     }
                 } else {
                     message.success('提交成功');
@@ -104,7 +104,8 @@ function UpdateAnswer(props) {
             })();
         }
         else {
-            message.error('没有权限或权限过期，请登录')
+            message.error('没有权限或权限过期，请登录');
+            props.logout();
         }
     }
 
@@ -142,7 +143,7 @@ function UpdateAnswer(props) {
                     <Form.Item label='题目图片'>
                         <Input type='file' multiple={true} files={probPics} onChange={e => setProbPics(e.target.files)}></Input>
                     </Form.Item>
-                    <Form.Item label='题接图片'>
+                    <Form.Item label='题解图片'>
                         <Input type='file' multiple={true} files={ansPics} onChange={e => { setAnsPics(e.target.files); }}></Input>
                     </Form.Item>
                     <Button type='primary' onClick={submit}>提交</Button>

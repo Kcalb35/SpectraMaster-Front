@@ -17,7 +17,7 @@ async function uniFetch(url, options) {
     if (!response.ok) {
         // unauthorized, jump to login page
         if (response.status === 401) {
-            // TODO
+            throw {code:401,msg:'未登录或认证过期'};
         }
         let errMsg = null;
         if (response.status >= 400 && response.status < 500) {

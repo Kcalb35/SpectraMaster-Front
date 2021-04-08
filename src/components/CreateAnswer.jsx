@@ -73,6 +73,7 @@ function CreateAnswer(props) {
                 if (!response.ok) {
                     if (response.status === 401) {
                         message.error('没有权限或权限过期，请登录');
+                        props.logout();
                     }
                 } else {
                     message.success('提交成功');
@@ -82,6 +83,7 @@ function CreateAnswer(props) {
         }
         else {
             message.error('没有权限或权限过期，请登录')
+            props.logout();
         }
     }
 
