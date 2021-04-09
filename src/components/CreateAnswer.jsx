@@ -42,7 +42,6 @@ function CreateAnswer(props) {
         if (jwt) {
             let headers = new Headers();
             headers.append("Authorization", `Bearer ${jwt}`);
-            console.log(headers);
             let formData = new FormData();
             formData.append('IonPeak', IonPeak);
             formData.append('Problem', prob);

@@ -18,7 +18,6 @@ function Login(props) {
         }
         option.body.username = user;
         option.body.password = pwd;
-        console.log(option.body);
         (async () => {
             let jwt = await uniFetch("/login", option);
             if (jwt) {
