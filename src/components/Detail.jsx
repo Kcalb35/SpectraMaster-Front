@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { uniFetch } from "../utils/apiUtil";
-import "antd/dist/antd.css"
 import { Image, Card, Button, Table, Popconfirm, message } from "antd";
 import { convert } from "./SearchAnswer";
+import "antd/dist/antd.css"
 import './Detail.css'
+import '../App.css'
 
 function Answer() {
     let { id } = useParams();
@@ -18,8 +19,8 @@ function Answer() {
     useEffect(() => {
         (async () => {
             let data = await uniFetch(`/ans/${id}`, { method: "GET" });
-            setProb(data.problem);
-            setAns(data.answer);
+            setProb(data.problem.replace('\n','\r\n'));
+            setAns(data.answer.replace('\n','\r\n'));
             setProbPics(data.problemPics);
             setAnsPics(data.answerPics);
             setFormula(data.formula);
@@ -32,11 +33,11 @@ function Answer() {
             <Card title="题目描述" size="small">
                 {formula && <p><b>分子式：</b>{convert(formula)}</p>}
                 {peak >= 0 && <p><b>分子离子峰：</b>{peak}</p>}
-                <p>{prob}</p>
+                <div className="display-linebreak">{prob}</div>
                 <DisplayPics pic={probPics} width="40%" alt="problem picture" />
             </Card>
             <Card title="题目解析" size="small">
-                <p>{ans}</p>
+                <div className="display-linebreak">{ans}</div>
                 <DisplayPics pic={ansPics} width="40%" alt="answer picture" />
             </Card>
             <Button style={{ margin: "10px 0 0 8px" }} type="primary"><Link to={`/backend/update/${id}`}>修改</Link></Button>
@@ -55,11 +56,9 @@ function AnswersList(props) {
                 try {
                     let option = { method: "DELETE", jwt: jwt };
                     let data = await uniFetch(`/ans/${id}`, option);
-                    console.log(data);
                     message.success("删除成功");
                 } catch (err) {
                     if (err.code === 401) {
-                        console.log(err);
                         localStorage.removeItem('jwt');
                         props.logout();
                         message.error(err.msg);

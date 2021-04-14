@@ -7,3 +7,7 @@
 .backend-layout-bg{
   background: #fff;
 }
+
+.display-linebreak{
+  white-space: pre-line;
+}

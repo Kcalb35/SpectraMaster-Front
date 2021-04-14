@@ -62,7 +62,6 @@ function UpdateAnswer(props) {
         if (jwt) {
             let headers = new Headers();
             headers.append("Authorization", `Bearer ${jwt}`);
-            console.log(headers);
             let formData = new FormData();
             formData.append('IonPeak', IonPeak);
             formData.append('Problem', prob);
@@ -71,7 +70,6 @@ function UpdateAnswer(props) {
                 const element = atomList[i];
                 formData.append(`Formula.${element}`, atoms[i]);
             }
-            console.log(ansPics);
             if (ansPics.length > 0)
                 for (let i = 0; i < ansPics.length; i++) {
                     const file = ansPics[i];
@@ -88,10 +86,8 @@ function UpdateAnswer(props) {
                 headers: headers,
                 body: formData,
             };
-            console.log(option);
             (async () => {
                 let response = await fetch(`/api/ans/${id}`, option);
-                console.log(response)
                 if (!response.ok) {
                     if (response.status === 401) {
                         message.error('没有权限或权限过期，请登录');

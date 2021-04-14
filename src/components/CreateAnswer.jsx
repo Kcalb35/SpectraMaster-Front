@@ -50,7 +50,6 @@ function CreateAnswer(props) {
                 const element = atomList[i];
                 formData.append(`Formula.${element}`, atoms[i]);
             }
-            console.log(ansPics);
             if (ansPics.length > 0)
                 for (let i = 0; i < ansPics.length; i++) {
                     const file = ansPics[i];
