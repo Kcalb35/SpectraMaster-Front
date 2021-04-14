@@ -1,38 +1,49 @@
 import "./SearchAnswer.css"
 import React, { useState } from "react";
-import { Input, Button, Form, message } from "antd";
+import { Input, Button, Form, message, Tooltip } from "antd";
 import { uniFetch } from "../utils/apiUtil";
-import { Card ,Checkbox} from "antd";
+import { Collapse, Checkbox } from "antd";
 import { DisplayPics } from "./Detail";
 import "antd/dist/antd.css"
 import { Link } from "react-router-dom";
+const { Panel } = Collapse;
 
 function SearchComplex(props) {
-    let [minIonPeak, setminIonPeak] = useState( 0 );
-    let [maxIonPeak, setmaxIonPeak] = useState( 0 );
+    let [minIonPeak, setminIonPeak] = useState(0);
+    let [maxIonPeak, setmaxIonPeak] = useState(0);
 
     const atomList = ['C', 'H', 'O', 'N', 'F', 'Si', 'P', 'S', 'Cl', 'Br', 'I'];
-    let [atoms, setAtoms] = useState(atomList.map(ele =>0 ));
+    let [atoms, setAtoms] = useState(atomList.map(ele => 0));
     let [entries, setEntries] = useState([]);
-    let [nmr,setNmr] = useState(true);
-    let [mass,setMass] = useState(true);
+    let [nmr, setNmr] = useState(true);
+    let [mass, setMass] = useState(true);
 
-    let checkmass=(e)=>{
+    let checkmass = (e) => {
         let flag = e.target.checked;
-        setmaxIonPeak(flag?0:-1);
-        setminIonPeak(flag?0:-1);
+        setmaxIonPeak(flag ? 0 : -1);
+        setminIonPeak(flag ? 0 : -1);
         setMass(flag);
     }
-    let checknmr=(e)=>{
+    let checknmr = (e) => {
         let flag = e.target.checked;
-        setAtoms(atomList.map(ele=> flag?0:-1));
+        setAtoms(atomList.map(ele => flag ? 0 : -1));
         setNmr(flag);
     }
 
     let search = () => {
+        if (!nmr && !mass) {
+            message.error("请至少勾选一项题目特征");
+            return;
+        }
         let formula = {};
-        for (let i = 0; i < atomList.length; i++)
-            formula[atomList[i].toLowerCase()] = atoms[i]
+        for (let i = 0; i < atomList.length; i++) {
+            let n = parseInt(atoms[i])
+            if (isNaN(n)) {
+                message.error(`请输入整数:${atomList[i]}原子数`);
+                return;
+            }
+            formula[atomList[i].toLowerCase()] = n;
+        }
         let body = {
             minIonPeak: minIonPeak,
             maxIonPeak: maxIonPeak,
@@ -47,61 +58,125 @@ function SearchComplex(props) {
                 let data = await uniFetch("/ans/search", option);
                 setEntries(data);
             }
-            catch(e){
+            catch (e) {
                 message.error(e.errMsg);
                 setEntries([]);
             }
         })();
     }
+
+    let allnmr = () => {
+        (async () => {
+            let data = await uniFetch("/ans/all", { method: "GET" });
+            setEntries(data.filter(e => e.formula != null));
+        })();
+    }
+    let allmass = () => {
+        (async () => {
+            let data = await uniFetch("/ans/all", { method: "GET" });
+            setEntries(data.filter(e => e.ionPeak >= 0));
+        })();
+    }
+
+    let DisplayFormula = (props) => {
+        let formulaTag = []
+        for (let i = 0; i < atomList.length; i++) {
+            let n = parseInt(atoms[i]);
+            if (isNaN(n)) break;
+            if (n > 1) {
+                formulaTag.push(<span>{atomList[i]}<sub>{n}</sub></span>);
+            }
+            else if (n === 1) {
+                formulaTag.push(<span>{atomList[i]}</span>);
+            }
+        }
+        return (<span>{formulaTag}</span>);
+    }
+
     return (
         <div>
-            <Checkbox checked={mass} onChange={checkmass}>查质谱</Checkbox>
-            <Checkbox checked={nmr} onChange={checknmr}>查核磁</Checkbox>
-            <Form layout="horizontal">
-                <div hidden={!mass}>
-                    <h3>分子离子峰质荷比</h3>
-                    <Form.Item label="范围下界"  >
-                        <Input
-                            placeholder="min Ion Peak"
-
-                            value={minIonPeak}
-                            maxLength="10"
-                            onChange={(e) => { setminIonPeak(e.target.value) }}
+            <div style={{ margin: "0 0 5px 5px" }}>
+                <Checkbox checked={mass} onChange={checkmass}>查质谱</Checkbox>
+                <Checkbox checked={nmr} onChange={checknmr}>查核磁</Checkbox>
+                <Button style={{ padding: "4px 4px" }} type="link" onClick={allmass}>所有质谱题解</Button>
+                <Button style={{ padding: "4px 4px" }} type="link" onClick={allnmr}>所有核磁题解</Button>
+            </div>
+            <Form layout="horizontal" style={{ margin: "0 0 10px 0" }}>
+                <Form.Item
+                    hidden={!mass}
+                    label="分子离子峰质荷比"
+                    tooltip={{ title: "确定分子离子峰上下界可一样；无分子离子峰全填0" }}
+                    style={{ marginBottom: '5px' }}
+                >
+                    <Input.Group compact>
+                        <Tooltip
+                            trigger={['focus']}
+                            title="分子离子峰下界"
+                        >
+                            <Input
+                                placeholder="Minimum"
+                                value={minIonPeak}
+                                style={{ width: 100, textAlign: 'center' }}
+                                onChange={(e) => { setminIonPeak(e.target.value) }}
+                            />
+                        </Tooltip>
+                        <Input style={{
+                            width: 30,
+                            borderLeft: 0,
+                            borderRight: 0,
+                            pointerEvents: 'none',
+                        }} placeholder="~" disabled
                         />
-                    </Form.Item>
+                        <Tooltip
+                            trigger={['focus']}
+                            title="分子离子峰上界"
+                        >
+                            <Input
+                                placeholder="Maximum"
+                                value={maxIonPeak}
+                                onChange={(e) => { setmaxIonPeak(e.target.value) }}
+                                style={{ width: 100, textAlign: 'center' }}
+                            />
+                        </Tooltip>
+                    </Input.Group>
+                </Form.Item>
 
-                    <Form.Item label="范围上界">
-                        <Input
-                            placeholder="max Ion Peak" value={maxIonPeak} maxLength="10" onChange={(e) => { setmaxIonPeak(e.target.value) }}
-                        />
+                <div hidden={!nmr} >
+                    <Form.Item label="分子式" tooltip={{ title: "无分子式则全填0" }} style={{ marginBottom: '5px' }}>
+
+                        <div id="formula-layout">
+                            {atomList.map((atom, index) =>
+                                <Input addonBefore={atom} value={atoms[index]} size="small" onChange={(e) => { setAtoms(atoms.map((item, i) => i === index ? e.target.value : item)) }} style={{ width: 100, textAlign: 'center' }} />
+                            )}
+                        </div>
                     </Form.Item>
-                </div>
-                <div hidden={!nmr}>
-                    <h3>分子式</h3>
-                    <div id="formula-layout">
-                        {atomList.map((atom, index) => <Form.Item label={atom} key={atom} >
-                            <Input maxLength="5" value={atoms[index]} size="small" onChange={(e) => { setAtoms(atoms.map((item, i) => i === index ? parseInt(e.target.value) : item)) }} style={{ width: 60 }} />
-                        </Form.Item>)}
+                    <div>
+                        当前分子式：<DisplayFormula atoms={atoms}></DisplayFormula>
                     </div>
                 </div>
-                <Form.Item>
-                    <Button type="primary" onClick={search}>搜索</Button>
-                </Form.Item>
             </Form>
+            <Button type="primary" onClick={search} style={{marginBottom:'20px'}}>搜索</Button>
 
-            {entries.map(ele =>
-                <Card
-                    title={<div>
-                        {(ele.formula != null) && <b>分子式：</b>}<span>{convert(ele.formula)}&nbsp;</span>
-                        {(ele.ionPeak != null) && <b>离子峰：</b>}<span>{ele.ionPeak}</span>
-                    </div>}
-                    style={{ marginTop: "10px" }}
-                    headStyle={{ background: "#fafafa" }}
-                    extra={<Link to={`/answer/${ele.id}`} >查看解析</Link>}>
-                    <p>{ele.problem}</p>
-                    <DisplayPics pic={ele.problemPics} width="40%" />
-                </Card>
+            {entries.length > 0 && (
+                <div>
+                    <div>有{entries.length}条搜索记录</div>
+                    <Collapse accordion>
+
+                        {entries.map(ele =>
+                            <Panel
+                                header={<span>
+                                    {(ele.formula != null) && (<span>分子式：<b>{convert(ele.formula)}&nbsp;&nbsp;&nbsp;&nbsp;</b></span>)}
+                                    {(ele.ionPeak >= 0) && (<span>离子峰：<b>{ele.ionPeak}</b></span>)}
+                                </span>}
+                                extra={<Link to={`/answer/${ele.id}`} >查看解析</Link>}>
+                                <p>{ele.problem}</p>
+                                <DisplayPics pic={ele.problemPics} width="40%" />
+                            </Panel>
+                        )}
+                    </Collapse>
+                </div>
             )}
+
         </div >
     )
 }

@@ -32,7 +32,7 @@ function Answer() {
         <div>
             <Card title="题目描述" size="small">
                 {formula && <p><b>分子式：</b>{convert(formula)}</p>}
-                {peak >= 0 && <p><b>分子离子峰：</b>{peak}</p>}
+                {peak >= 1 && <p><b>分子离子峰：</b>{peak}</p>}
                 <div className="display-linebreak">{prob}</div>
                 <DisplayPics pic={probPics} width="40%" alt="problem picture" />
             </Card>
