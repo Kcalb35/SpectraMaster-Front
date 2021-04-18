@@ -28,7 +28,7 @@ function Login(props) {
     }
 
     return (
-        <div id="login-form" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', padding: 100 }}>
+        <div id="login-form" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' , marginTop:'100px' }}>
             <Form method="post" style={{ maxWidth: 600 }} >
                 <Form.Item rules={[{
                     required: true,

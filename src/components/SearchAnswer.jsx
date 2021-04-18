@@ -13,9 +13,9 @@ function SearchComplex(props) {
     let [maxIonPeak, setmaxIonPeak] = useState(0);
 
     const atomList = ['C', 'H', 'O', 'N', 'F', 'Si', 'P', 'S', 'Cl', 'Br', 'I'];
-    let [atoms, setAtoms] = useState(atomList.map(ele => 0));
+    let [atoms, setAtoms] = useState(atomList.map(ele => -1));
     let [entries, setEntries] = useState([]);
-    let [nmr, setNmr] = useState(true);
+    let [nmr, setNmr] = useState(false);
     let [mass, setMass] = useState(true);
 
     let checkmass = (e) => {
@@ -33,6 +33,14 @@ function SearchComplex(props) {
     let search = () => {
         if (!nmr && !mass) {
             message.error("请至少勾选一项题目特征");
+            return;
+        }
+        if (minIonPeak === '') {
+            message.error("请输入最小范围")
+            return;
+        }
+        if (maxIonPeak === '') {
+            message.error("请输入最大范围")
             return;
         }
         let formula = {};
@@ -96,10 +104,14 @@ function SearchComplex(props) {
     return (
         <div>
             <div style={{ margin: "0 0 5px 5px" }}>
-                <Checkbox checked={mass} onChange={checkmass}>查质谱</Checkbox>
-                <Checkbox checked={nmr} onChange={checknmr}>查核磁</Checkbox>
-                <Button style={{ padding: "4px 4px" }} type="link" onClick={allmass}>所有质谱题解</Button>
-                <Button style={{ padding: "4px 4px" }} type="link" onClick={allnmr}>所有核磁题解</Button>
+                <Tooltip title="当有质谱请勾这个">
+                    <Checkbox checked={mass} onChange={checkmass}>查质谱</Checkbox>
+                </Tooltip>
+                <Tooltip title="当有核磁谱请勾这个">
+                    <Checkbox checked={nmr} onChange={checknmr}>查核磁</Checkbox>
+                </Tooltip>
+                <Button style={{ padding: "4px 4px" }} type="link" onClick={allmass}>查看所有质谱题解</Button>
+                <Button style={{ padding: "4px 4px" }} type="link" onClick={allnmr}>查看所有核磁题解</Button>
             </div>
             <Form layout="horizontal" style={{ margin: "0 0 10px 0" }}>
                 <Form.Item
@@ -155,7 +167,7 @@ function SearchComplex(props) {
                     </div>
                 </div>
             </Form>
-            <Button type="primary" onClick={search} style={{marginBottom:'20px'}}>搜索</Button>
+            <Button type="primary" onClick={search} style={{ marginBottom: '20px' }}>搜索</Button>
 
             {entries.length > 0 && (
                 <div>

@@ -1,6 +1,6 @@
 function About() {
     return (
-        <div style={{ margin: '10px 30px' }}>
+        <div style={{ margin: '5px 10px' }}>
             <h1 style={{ fontSize: '20px', fontWeight: 'bold' }}>关于本项目</h1>
             <p>
 

@@ -40,7 +40,8 @@ function Answer() {
                 <div className="display-linebreak">{ans}</div>
                 <DisplayPics pic={ansPics} width="40%" alt="answer picture" />
             </Card>
-            <Button style={{ margin: "10px 0 0 8px" }} type="primary"><Link to={`/backend/update/${id}`}>修改</Link></Button>
+            <Button style={{margin:"10px 0 0 10px"}} type="primary"><Link to='/search'>返回</Link></Button>
+            <Button style={{ margin: "10px 0 0 8px" }} ><Link to={`/backend/update/${id}`}>修改</Link></Button>
         </div>
     )
 }
@@ -56,7 +57,7 @@ function AnswersList(props) {
                 try {
                     let option = { method: "DELETE", jwt: jwt };
                     let data = await uniFetch(`/ans/${id}`, option);
-                    message.success("删除成功");
+                    message.success(`删除成功${data.id}`);
                 } catch (err) {
                     if (err.code === 401) {
                         localStorage.removeItem('jwt');

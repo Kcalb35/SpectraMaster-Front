@@ -21,29 +21,29 @@ const { Header, Footer, Sider, Content } = Layout
 
 function App() {
 
-  let [login,setLogin] = useState(localStorage.getItem('jwt')?true:false);
-  let logout = ()=>{setLogin(false);localStorage.removeItem('jwt');}
- 
+  let [login, setLogin] = useState(localStorage.getItem('jwt') ? true : false);
+  let logout = () => { setLogin(false); localStorage.removeItem('jwt'); }
+
   return (
     <Router>
       <Layout className="layout" style={{ height: '100%' }}>
-        <Header>
+        <Header style={{ padding: '0 20px' }}>
           <div className="logo"></div>
-          <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']} >
+          <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}  >
             <Menu.Item key="1">
-              <Link to="/" style={{ fontSize: "16px" }}>首页</Link>
+              <Link to="/" >首页</Link>
             </Menu.Item>
             <Menu.Item key="4"><Link to="/search">题解搜索</Link></Menu.Item>
             <Menu.Item key="5"><Link to="/about">帮助与关于</Link></Menu.Item>
             <Menu.Item key="6">
-              <Link to="/login" style={{ fontSize: "16px" }}>后台登录</Link>
+              <Link to="/login">后台登录</Link>
             </Menu.Item>
           </Menu>
         </Header>
         <Switch>
           <Route path="/backend">
             <Layout>
-              <Sider width={180} className="site-layout-background">
+              <Sider width={150} className="site-layout-background">
                 <Menu
                   mode="inline"
                   defaultSelectedKeys={['1']}
@@ -64,13 +64,13 @@ function App() {
                   }}
                 >
                   <Route path="/backend/create">
-                    {!login?<Redirect to="/login"/>:<CreateAnswer logout={logout}/>}
+                    {!login ? <Redirect to="/login" /> : <CreateAnswer logout={logout} />}
                   </Route>
                   <Route path="/backend/update/:id">
-                    {!login?<Redirect to="/login"/>:<UpdateAnswer logout={logout}/>}
+                    {!login ? <Redirect to="/login" /> : <UpdateAnswer logout={logout} />}
                   </Route>
                   <Route path="/backend/answers">
-                    {!login?<Redirect to="/login"/>:<AnswersList logout={logout}/>}
+                    {!login ? <Redirect to="/login" /> : <AnswersList logout={logout} />}
                   </Route>
                   <Route path="/backend/users"><h2>前后端都还没做</h2></Route>
                   <Route exact path="/backend">
@@ -80,13 +80,13 @@ function App() {
               </Layout>
             </Layout>
           </Route>
-          <Content style={{ padding: '0 50px' }} className="site-layout-context">
+          <Content style={{ padding: '0 20px' }} className="site-layout-context">
             <div className="site-layout-content">
               <Route path="/about">
                 <About />
               </Route>
               <Route path="/login">
-                {login?<Redirect to="/backend/answers"/>:<Login loginMethod={()=>{setLogin(true);}}/>}
+                {login ? <Redirect to="/backend/answers" /> : <Login loginMethod={() => { setLogin(true); }} />}
               </Route>
               <Route path="/search">
                 <SearchComplex ></SearchComplex>
@@ -96,7 +96,7 @@ function App() {
                 <Result status='404' title='404'></Result>
               </Route>
               <Route exact path="/">
-                <MainPage/>
+                <MainPage />
               </Route>
             </div>
           </Content>
