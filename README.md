@@ -9,3 +9,8 @@ yarn start
 ```
 REACT_APP_IMAGE_PATH=<backend-pictures-path>
 ```
+
+# fix
+```bash
+export NODE_OPTIONS=--openssl-legacy-provider
+```

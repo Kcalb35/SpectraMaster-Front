@@ -76,13 +76,23 @@ function SearchComplex(props) {
     let allnmr = () => {
         (async () => {
             let data = await uniFetch("/ans/all", { method: "GET" });
-            setEntries(data.filter(e => e.formula != null));
+            setEntries(data.filter(e => e.formula != null).sort((a, b) =>{
+                let c1 = a.formula['c'];
+                let c2 = b.formula['c'];
+                if (c1===0){
+                    return 10000-c2;
+                }else if (c2 ===0){
+                    return c1-10000;
+                }else{
+                    return c1-c2;
+                }
+            }));
         })();
     }
     let allmass = () => {
         (async () => {
             let data = await uniFetch("/ans/all", { method: "GET" });
-            setEntries(data.filter(e => e.ionPeak >= 0));
+            setEntries(data.filter(e => e.ionPeak >= 0).sort((a,b)=>a.ionPeak-b.ionPeak));
         })();
     }
 

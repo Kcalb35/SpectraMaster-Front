@@ -8,7 +8,7 @@ const { TextArea } = Input;
 
 function UpdateAnswer(props) {
     let { id } = useParams();
-    let [IonPeak, setIonPeak] = useState(0);
+    let [IonPeak, setIonPeak] = useState(-1);
     const atomList = ['C', 'H', 'O', 'N', 'F', 'Si', 'P', 'S', 'Cl', 'Br', 'I'];
     let [atoms, setAtoms] = useState(atomList.map(ele => 0));
     let [nmr, setNmr] = useState(true);

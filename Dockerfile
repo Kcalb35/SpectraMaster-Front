@@ -1,4 +1,4 @@
-FROM node:15.13.0 AS builder
+FROM node:latest AS builder
 WORKDIR /usr/src/app
 COPY yarn.lock package.json .env.production.local  ./
 
@@ -7,9 +7,10 @@ RUN yarn install
 
 COPY public/ ./public/
 COPY src/ ./src/
+ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN yarn build
 
-FROM node:14.16.1-alpine3.12
+FROM node:lts-slim
 RUN npm install -g serve 
 
 RUN mkdir /usr/spectra
